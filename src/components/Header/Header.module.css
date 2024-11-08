@@ -1,0 +1,24 @@
+.header { 
+    display: flex;
+    padding: 1vw 6vw 1vw 3vw;
+    background-color: var(--black);
+    color: var(--white);
+    justify-content: space-between;
+}
+
+.logo { 
+    width: 12vw;
+    margin-right: 10vw;
+}
+
+.linkList{ 
+    font-size: 24px;
+    font-weight: 500;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav {
+    width: 100%;
+}
