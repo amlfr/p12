@@ -1,0 +1,30 @@
+.main { 
+    padding: 4.5vw 7vw 0 7vw;
+    width: 100%;
+}
+
+.title { 
+    font-size: 48px;
+}
+
+.userName { 
+    color: var(--red);
+}
+
+.nutrionalInfoContainer{ 
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    justify-content: space-around;
+}
+
+.layoutContainer { 
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+.lineInfoContainer {
+    display: flex;
+}

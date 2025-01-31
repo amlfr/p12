@@ -1,0 +1,9 @@
+.iconContainer { 
+    width: 4vw;
+    aspect-ratio: 1;
+    background-color: var(--white);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

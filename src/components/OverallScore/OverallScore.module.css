@@ -1,0 +1,114 @@
+.overallScoreContainer { 
+  background-color: var(--light-grey);
+  width: 17vw;
+  aspect-ratio: 1;
+  padding: 1vw 1vw;
+  position: relative;
+  
+}
+
+.title { 
+  color: var(--dark-grey-text);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.scoreNumber { 
+  color: var(--dark-grey-text);
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+.text { 
+  color: var(--dark-grey);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.progressBarContainer{ 
+  height : 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progressBarBackgroundOuter { 
+  background-color: var(--black);
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border: solid 2px var(--red)
+}
+
+.progressBarBackgroundInner { 
+  background-color: var(--black);
+  height: 100%;
+  width: 100%;
+  border-radius: 50%; 
+  position: absolute;
+}
+
+.progressBar  { 
+  background-color: var(--red);
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+}
+
+.contentContainer { 
+  height: 100%;
+}
+
+.progressBarContainer {
+  height: 100%;
+  width: 100%;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.progress,
+.progressBorder,
+.track,
+.borderTrack  {
+  fill: transparent;
+}
+.progress {
+  stroke: var(--red);
+  stroke-width: 14px;
+  stroke-linecap: round;
+}
+
+.circleTest  {
+  stroke: var(--red);
+  stroke-width: 14px;
+  stroke-linecap: round;
+}
+/*  .progressBorder {
+  stroke: var(--yellow);
+  stroke-width: 14px;
+  stroke-linecap: round;
+  stroke-dasharray: 600;
+  stroke-dashoffset: 0; 
+} */
+.track {
+  stroke: hsl(0, 0%, 100%);
+  stroke-width: 10px;
+}
+.borderTrack {
+  stroke: hsl(0, 0%, 93%);
+  stroke-width: 12px;
+}
+
+.progressBarContainer, .progressBarItem { 
+z-index: 1000000;
+position: relative;
+}
+
+.scoreTextContainer { 
+position: absolute;
+left: 50%;
+top: 50%;
+text-align: center;
+}

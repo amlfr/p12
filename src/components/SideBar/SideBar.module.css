@@ -1,0 +1,25 @@
+.sideBar { 
+    height: 100%;
+    background-color: var(--black);
+    width: 7vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.text { 
+    color: var(--white);
+    writing-mode: sideways-rl;
+    transform: rotate(180deg);
+    position: absolute;
+    bottom: 2vh;
+
+}
+
+.menuIconsContainer { 
+    display: flex;
+    flex-direction: column;
+    gap: 2.5vh;
+}

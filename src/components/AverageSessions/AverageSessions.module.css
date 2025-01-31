@@ -1,0 +1,27 @@
+.title{ 
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    opacity: 0.5;
+}
+
+.daysList { 
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.daysItem { 
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    opacity: 0.5;
+}
+
+.averageSessionsContainer { 
+    background-color: var(--red);
+    width: 17vw;
+    aspect-ratio: 1;
+    padding: 1vw 1vw;
+}

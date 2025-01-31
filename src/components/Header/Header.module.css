@@ -1,9 +1,10 @@
 .header { 
     display: flex;
-    padding: 1vw 6vw 1vw 3vw;
+    padding: 1vw 6vw 1vw 1.9vw;
     background-color: var(--black);
     color: var(--white);
     justify-content: space-between;
+    align-items: center;
 }
 
 .logo { 
