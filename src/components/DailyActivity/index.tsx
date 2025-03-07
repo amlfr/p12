@@ -118,6 +118,95 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .attr('height', (d) => (heightState * 0.7) - yScaleKcal(d.calories))
             .attr('fill', 'red')
             .attr('rx', 5);
+        // Create a group for hover effects, now placed behind the bars but above the axis
+        const hoverGroup = chart
+            .append('g')
+            .attr('class', 'hover-group')
+            .lower(); // Moves the hover group behind the bars but above the axis
+
+        // Bind data and create transparent hover rectangles
+        hoverGroup
+            .selectAll('.hover-rect')
+            .data(data)
+            .enter()
+            .append('rect')
+            .attr('class', 'hover-rect')
+            .attr('x', (d) => (xScale(d.day) || 0) + (xScale.bandwidth() - barWidth * 3) / 2) // 🟢 Centered with larger width
+            .attr('y', (d) => Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50) // 🟢 More height above
+            .attr('width', barWidth * 3) // 🟢 Wider hover rectangle
+            .attr('height', (d) => (heightState * 0.7) - Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) + 50)
+            .attr('fill', 'rgba(196, 196, 196, 1)')
+            .attr('fill-opacity', 0) // 🟢 Initially invisible
+            .attr('rx', 5)
+            .on('mouseover', function (event, d) {
+                // Change opacity to show the hover rectangle
+                d3.select(this).attr('fill-opacity', 0.4);
+
+                // Red tooltip rectangle, taller and more left-aligned
+                hoverGroup
+                    .append('rect')
+                    .attr('class', 'tooltip-rect')
+                    .attr('x', (xScale(d.day) || 0) - barWidth * 2) // 🟢 Shifted left
+                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 80) // 🟢 Taller rectangle
+                    .attr('width', 30)
+                    .attr('height', 80)
+                    .attr('fill', 'red')
+                    .attr('rx', 5);
+
+                // Tooltip text
+                hoverGroup
+                    .append('text')
+                    .attr('class', 'tooltip-text')
+                    .attr('x', (xScale(d.day) || 0) - barWidth * 1.5) // 🟢 Matching left alignment
+                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50)
+                    .attr('fill', 'white')
+                    .attr('font-size', '10px')
+                    .attr('text-anchor', 'middle')
+                    .text(`${d.kilogram}kg / ${d.calories}kcal`);
+            })
+            .on('mouseout', function () {
+                // Revert opacity and remove tooltip
+                d3.select(this).attr('fill-opacity', 0);
+                hoverGroup.selectAll('.tooltip-rect').remove();
+                hoverGroup.selectAll('.tooltip-text').remove();
+            });
+
+        // Now handle bar hover to trigger the hover rect
+        chart
+            .selectAll('.bar-kilogram, .bar-calories') // Add hover effect to both bars
+            .on('mouseover', (event, d) => {
+                const hoverRect = hoverGroup
+                    .select('.hover-rect')
+                    .filter((dd) => dd === d);
+
+                hoverRect.attr('fill-opacity', 0.4);
+
+                // Add red tooltip rectangle on hover
+                hoverGroup
+                    .append('rect')
+                    .attr('class', 'tooltip-rect')
+                    .attr('x', (xScale(d.day) || 0) - barWidth * 2) // 🟢 Shifted left
+                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 80) // 🟢 Taller rectangle
+                    .attr('width', 30)
+                    .attr('height', 80)
+                    .attr('fill', 'red')
+                    .attr('rx', 5);
+
+                // Tooltip text
+                hoverGroup
+                    .append('text')
+                    .attr('class', 'tooltip-text')
+                    .attr('x', (xScale(d.day) || 0) - barWidth * 1.5) // 🟢 Matching left alignment
+                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50)
+                    .attr('fill', 'white')
+                    .attr('font-size', '10px')
+                    .attr('text-anchor', 'middle')
+                    .text(`${d.kilogram}kg / ${d.calories}kcal`);
+            })
+            .on('mouseout', () => {
+                hoverGroup.selectAll('.tooltip-rect').remove();
+                hoverGroup.selectAll('.tooltip-text').remove();
+            });
 
         console.log('check data ', data);
     }, [activityInfoData, widthState]);
