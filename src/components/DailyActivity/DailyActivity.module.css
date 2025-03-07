@@ -1,0 +1,6 @@
+.container { 
+    width: 100%; 
+    height: 52%;
+    border-radius: 5px;
+    background-color: var(--light-grey);
+}

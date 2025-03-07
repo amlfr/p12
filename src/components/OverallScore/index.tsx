@@ -2,13 +2,13 @@ import {
     useEffect, useRef, useLayoutEffect, useState,
 } from 'react';
 import * as d3 from 'd3';
+import styles from './OverallScore.module.css';
 
 export const OverallScore = ({ score }) => {
     const progressBarRef = useRef(null);
     const containerRef = useRef(null);
     const [size, setSize] = useState(0);
 
-    // Dynamically get the size of the container
     useLayoutEffect(() => {
         if (containerRef.current) {
             const { width, height } = containerRef.current.getBoundingClientRect();
@@ -34,8 +34,8 @@ export const OverallScore = ({ score }) => {
         // Background Circle (Grey Track)
         svgGroup.append('circle')
             .attr('r', radius)
-            .attr('fill', 'none')
-            .attr('stroke', '#ddd')
+            .attr('fill', 'white')
+            .attr('stroke', '#FBFBFB')
             .attr('stroke-width', thickness);
 
         // Arc generator (starting from the top)
@@ -43,8 +43,8 @@ export const OverallScore = ({ score }) => {
             .arc()
             .innerRadius(radius - thickness / 2)
             .outerRadius(radius + thickness / 2)
-            .startAngle(0) 
-            .endAngle(0 - score * 2 * Math.PI) 
+            .startAngle(0)
+            .endAngle(0 - score * 2 * Math.PI)
             .cornerRadius(7);
 
         svgGroup.append('path')
@@ -55,14 +55,14 @@ export const OverallScore = ({ score }) => {
     return (
         <div
             ref={containerRef}
-            style={{
-                width: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
+            className={styles.container}
         >
             <svg ref={progressBarRef} />
-            <div style={{ position: 'absolute', fontSize: '24px', fontWeight: 'bold' }}>
+            <div className={styles.textContainer}>
                 {Math.round(score * 100)}
                 %
+                <br />
+                <span className={styles.scoreText}>de votre objectif</span>
             </div>
         </div>
     );

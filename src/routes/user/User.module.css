@@ -1,6 +1,7 @@
 .main { 
     padding: 4.5vw 7vw 0 7vw;
     width: 100%;
+    height: 100%;
 }
 
 .title { 
@@ -14,17 +15,34 @@
 .nutrionalInfoContainer{ 
     display: flex;
     flex-direction: column;
-    height: 50vh;
-    justify-content: space-around;
+    height: 100%;
+    justify-content:space-between;
+    width: auto;
+    width: 23%;
 }
 
 .layoutContainer { 
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    height: 100%;
+    align-items: center;
+    margin-top: 4vh;
+    height: 65vh;
+    width:75vw;
 }
 
 .lineInfoContainer {
     display: flex;
+    gap: 2vw;
+    justify-content: space-between;
+    width: 100%;
+    height: 43%;
+}
+
+.allInfoContainer { 
+    flex-shrink: 3;
+   height: 100%;
+   width: 75%;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
 }

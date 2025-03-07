@@ -7,6 +7,8 @@ import { profilePageLoader } from '../../loader/profilePageLoader';
 import NutritionalInfo from '../../components/NutritionalInfo';
 import { AverageSessions } from '../../components/AverageSessions';
 import { OverallScore } from '../../components/OverallScore';
+import { SkillChart } from '../../components/SkillChart';
+import { DailyActivity } from '../../components/DailyActivity';
 
 type LoaderData = Awaited<ReturnType<typeof profilePageLoader>>;
 
@@ -14,8 +16,6 @@ const UserPage = () => {
     const {
         userInfoData, performanceInfoData, activityInfoData, timeInfoData,
     } = useLoaderData() as LoaderData;
-    console.log('userData', userInfoData);
-    const nutritionalData: KeyData = userInfoData.keyData;
 
     return (
         <main className={styles.main}>
@@ -28,14 +28,16 @@ const UserPage = () => {
             </span>
             <div className={styles.layoutContainer}>
                 <div className={styles.allInfoContainer}>
+                    <DailyActivity activityInfoData={activityInfoData} />
                     <div className={styles.lineInfoContainer}>
                         <AverageSessions timeInfoData={timeInfoData} />
+                        <SkillChart performanceInfoData={performanceInfoData} />
                         <OverallScore score={userInfoData.score} />
                     </div>
                 </div>
                 <div className={styles.nutrionalInfoContainer}>
-                    {Object.keys(nutritionalData).map((type, index) => (
-                        <NutritionalInfo key={index} type={type as keyof KeyData} value={nutritionalData[type as keyof KeyData]} />
+                    {Object.keys(userInfoData.keyData).map((type, index) => (
+                        <NutritionalInfo key={index} type={type as keyof KeyData} value={userInfoData.keyData[type as keyof KeyData]} />
                     ))}
                 </div>
             </div>

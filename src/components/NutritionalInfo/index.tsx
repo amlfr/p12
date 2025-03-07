@@ -43,8 +43,11 @@ const NutritionalInfo = ({ type, value }: NutritionalInfoProps) => {
                 <img className={styles.icon} style={{ opacity: 1 }} src={svgPath} />
             </div>
             <div className={styles.textContainer}>
-                <span className={styles.textValue}>{`${value} ${typeInfos[type].unit}`}</span>
-                <span className={styles.textName}>{translatedType}</span>
+                <span className={styles.textValue}>{`${value}${typeInfos[type].unit}`}</span>
+                <span className={styles.textName}>
+                    {translatedType.charAt(0).toUpperCase()
+                        + translatedType.slice(1)}
+                </span>
             </div>
         </div>
     );

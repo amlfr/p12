@@ -1,9 +1,9 @@
 .wrapper { 
-    width: 7.9vw; 
-    aspect-ratio: 2.08;
+    width: 100%;
     display: flex;
     padding: 1.5vw 0 1.5vw 1.5vw;
     background-color: var(--light-grey);
+    gap: 10%;
 }
 
 .textValue { 
@@ -17,6 +17,7 @@
     color: var(--dark-grey);
     font-weight: 500;
     font-size: 14px;
+    margin-top: 5px;
 }
 
 
@@ -30,4 +31,12 @@
 
 .icon {
     width: 20px;
+}
+
+
+.textContainer { 
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
 }
