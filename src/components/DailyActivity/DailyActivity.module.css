@@ -4,3 +4,40 @@
     border-radius: 5px;
     background-color: var(--light-grey);
 }
+
+.chartInfo{ 
+    display: flex;
+    position: relative;
+    top: 8%;
+    left: 5%;
+    width: 80%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title{
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--chart-legend-grey);
+}
+
+.legendContainer{ 
+    display: flex;
+    gap: 5%;
+    flex-direction: row;
+    width: 35%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.svgContainer { 
+    display: flex;
+    justify-content: center;
+}
+
+.legendText { 
+    font-size: 14px;
+    color: var(--dark-grey);
+    font-weight: 500;
+    
+}
