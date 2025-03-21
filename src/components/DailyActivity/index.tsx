@@ -6,6 +6,8 @@ interface DailyActivityProps {
     activityInfoData: ActivityInfoData;
 }
 
+//TODO naming across app can use following terms  https://openclassrooms.notion.site/Tableau-de-bord-SportSee-6686aa4b5f44417881a4884c9af5669e?p=7ee3d83fa4944dfca5d61ffde8483d44&pm=s
+
 export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }) => {
     const graphRef = useRef<SVGSVGElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -34,79 +36,90 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .append('g')
             .attr('transform', 'translate(60, 60)');
 
+        const parseDate = d3.timeParse('%Y-%m-%d');
+
         const xScale = d3
-            .scaleBand()
-            .domain(data.map((d) => d.day))
-            .range([0, widthState * 0.85])
-            .padding(0.2);
+            .scaleTime()
+            .domain(d3.extent(data, (d) => parseDate(d.day)) as [Date, Date])
+            .range([0, widthState * 0.85]);
 
         const yMaxKg = d3.max(data, (d) => d.kilogram || 0);
         const yMinKg = d3.min(data, (d) => d.kilogram || 0);
-        const yScaleKg = d3.scaleLinear().domain([yMinKg + 1, yMaxKg]).range([heightState * 0.7, 0]);
+        const yScaleKg = d3.scaleLinear().domain([yMaxKg - 8, yMaxKg + 1]).range([heightState * 0.65, 0]);
 
         const yMaxKcal = d3.max(data, (d) => d.calories || 0);
-        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal]).range([heightState * 0.7, 0]);
+        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * 0.71, 0]);
 
-        chart.append('g').attr('transform', `translate(0, ${heightState * 0.7})`).call(d3.axisBottom(xScale));
-        chart.append('g').attr('transform', `translate(${widthState * 0.8}, 0)`).call(d3.axisRight(yScaleKg));
-        chart.append('g').call(d3.axisLeft(yScaleKcal));
+        chart.append('g').attr('transform', `translate(0, ${heightState * 0.65})`).call(d3.axisBottom(xScale));
+        chart.append('g').attr('transform', `translate(${widthState * 0.85}, 0)`).call(d3.axisRight(yScaleKg));
 
         svg.selectAll('.tick').remove();
 
-        const barWidth = xScale.bandwidth() * 0.1;
+        const xAxis = d3.axisBottom(xScale);
 
-        chart
-            .append('line')
+        const yAxisKg = d3.axisRight(yScaleKg);
+
+        chart.append('g')
+            .attr('transform', `translate(0, ${heightState * 0.65})`).attr('class', styles.xAxis)
+            .call(xAxis)
+            .attr('class', styles.xAxisTrue)
+            .selectAll('text')
+            .attr('class', styles.xAxisLabel);
+
+        chart.append('g')
+            .attr('transform', `translate(${widthState * 0.85}, 0)`)
+            .call(yAxisKg)
+            .attr('class', styles.yAxisKg)
+            .selectAll('text')
+            .attr('class', styles.yAxisKgLabel);
+
+        chart.append('line')
             .attr('x1', 0)
             .attr('x2', widthState * 0.85)
-            .attr('y1', yScaleKg(yMaxKg / 2))
-            .attr('y2', yScaleKg(yMaxKg / 2))
-            .attr('stroke', 'var(--chart-dotted-line)')
-            .attr('stroke-dasharray', '4');
+            .attr('y1', yScaleKg((yMaxKg - 8 + yMaxKg + 1) / 2))
+            .attr('y2', yScaleKg((yMaxKg - 8 + yMaxKg + 1) / 2))
+            .attr('stroke', '#DEDEDE')
+            .attr('stroke-dasharray', '4')
+            .attr('class', 'dotted-line');
 
-        /* chart
-            .append('line')
+        chart.append('line')
             .attr('x1', 0)
-            .attr('x2', widthState * 0.8)
-            .attr('y1', yScaleKg(yMaxKg ))
-            .attr('y2', yScaleKg(yMaxKg))
-            .attr('stroke', 'grey')
-            .attr('stroke-dasharray', '4'); */
+            .attr('x2', widthState * 0.85)
+            .attr('y1', yScaleKg(yMaxKg + 1))
+            .attr('y2', yScaleKg(yMaxKg + 1))
+            .attr('stroke', '#DEDEDE')
+            .attr('stroke-dasharray', '4')
+            .attr('class', 'dotted-line');
 
-        //TODO REPAIR MAX KG LINE
+        const barWidth = (widthState * 0.01);
 
-        // Grey Bars (Kilograms on left side)
         chart
             .selectAll('.bar-kilogram')
             .data(data)
             .enter()
             .append('rect')
             .attr('class', 'bar-kilogram')
-            .attr('x', (d) => (xScale(d.day) || 0) + (xScale.bandwidth() - barWidth) / 2 - barWidth / 2)
+            .attr('x', (d) => (xScale(parseDate(d.day)) || 0) - barWidth / 2)
             .attr('y', (d) => yScaleKg(d.kilogram))
             .attr('width', barWidth)
-            .attr('height', (d) => heightState * 0.7 - yScaleKg(d.kilogram))
+            .attr('height', (d) => heightState * 0.65 - yScaleKg(d.kilogram))
             .attr('fill', '#282D30')
             .attr('rx', 5);
 
-        // Red Bars (Calories on right side)
         chart
             .selectAll('.bar-calories')
             .data(data)
             .enter()
             .append('rect')
             .attr('class', 'bar-calories')
-            .attr('x', (d) => (xScale(d.day) || 0) + (xScale.bandwidth() - barWidth) / 2 + barWidth / 2)
+            .attr('x', (d) => (xScale(parseDate(d.day)) || 0) + barWidth / 2)
             .attr('y', (d) => yScaleKcal(d.calories))
             .attr('width', barWidth)
-            .attr('height', (d) => heightState * 0.7 - yScaleKcal(d.calories))
+            .attr('height', (d) => heightState * 0.65 - yScaleKcal(d.calories))
             .attr('fill', 'red')
             .attr('rx', 5);
 
-        const hoverGroup = chart
-            .append('g')
-            .attr('class', 'hover-group')
-            .lower();
+        const hoverGroup = chart.append('g').attr('class', 'hover-group').lower();
 
         hoverGroup
             .selectAll('.hover-rect')
@@ -114,72 +127,62 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .enter()
             .append('rect')
             .attr('class', 'hover-rect')
-            .attr('x', (d) => (xScale(d.day) || 0) + (xScale.bandwidth() - barWidth * 5) / 2)
-            .attr('y', (d) => Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50)
+            .attr('x', (d) => xScale(parseDate(d.day)) - barWidth * 2.5)
+            .attr('y', 0)
             .attr('width', barWidth * 5)
-            .attr('height', (d) => heightState * 0.7 - Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) + 50)
+            .attr('height', heightState * 0.65)
             .attr('fill', '#c4c4c4')
             .attr('fill-opacity', 0)
             .on('mouseover', function (event, d) {
-                d3.select(this).attr('fill-opacity', 0.4);
+                d3.select(this).attr('fill-opacity', 0.2);
+
+                const tooltipX = xScale(parseDate(d.day)) + 50;
+                const tooltipY = Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories));
 
                 hoverGroup
                     .append('rect')
                     .attr('class', 'tooltip-rect')
-                    .attr('x', (xScale(d.day) || 0) - barWidth * 2)
-                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 80)
-                    .attr('width', 30)
-                    .attr('height', 80)
-                    .attr('fill', 'red');
+                    .attr('x', tooltipX)
+                    .attr('y', tooltipY)
+                    .attr('width', 50)
+                    .attr('height', 40)
+                    .attr('rx', 5)
+                    .attr('fill', '#E60000');
 
                 hoverGroup
                     .append('text')
                     .attr('class', 'tooltip-text')
-                    .attr('x', (xScale(d.day) || 0) - barWidth * 1.5)
-                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50)
+                    .attr('x', tooltipX + 25)
+                    .attr('y', tooltipY + 15)
                     .attr('fill', 'white')
-                    .attr('font-size', '7px')
+                    .attr('font-size', '10px')
                     .attr('text-anchor', 'middle')
-                    .text(`${d.kilogram}kg  ${d.calories}kcal`);
+                    .text(`${d.kilogram}kg`);
+
+                hoverGroup
+                    .append('text')
+                    .attr('class', 'tooltip-text')
+                    .attr('x', tooltipX + 25)
+                    .attr('y', tooltipY + 30)
+                    .attr('fill', 'white')
+                    .attr('font-size', '10px')
+                    .attr('text-anchor', 'middle')
+                    .text(`${d.calories}kcal`);
             })
             .on('mouseout', function () {
                 d3.select(this).attr('fill-opacity', 0);
-                hoverGroup.selectAll('.tooltip-rect').remove();
-                hoverGroup.selectAll('.tooltip-text').remove();
+                hoverGroup.selectAll('.tooltip-rect, .tooltip-text').remove();
             });
 
-        chart
-            .selectAll('.bar-kilogram, .bar-calories')
-            .on('mouseover', (event, d) => {
-                const hoverRect = hoverGroup
-                    .select('.hover-rect')
-                    .filter((dd) => dd === d);
+        chart.selectAll('.bar-kilogram, .bar-calories').on('mouseover', (event, d) => {
+            const hoverRect = hoverGroup.select('.hover-rect').filter((dd) => dd === d);
+            hoverRect.attr('fill-opacity', 0.2);
+        });
 
-                hoverRect.attr('fill-opacity', 0.4);
-
-                hoverGroup
-                    .append('rect')
-                    .attr('class', 'tooltip-rect')
-                    .attr('x', (xScale(d.day) || 0) - barWidth * 2)
-                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 80)
-                    .attr('width', 30)
-                    .attr('height', 80)
-                    .attr('fill', 'red');
-
-                hoverGroup
-                    .append('text')
-                    .attr('class', 'tooltip-text')
-                    .attr('x', (xScale(d.day) || 0) - barWidth * 1.5)
-                    .attr('y', Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories)) - 50)
-                    .attr('fill', 'white')
-                    .attr('font-size', '7px')
-                    .attr('text-anchor', 'middle')
-                    .text(`${d.kilogram}kg  ${d.calories}kcal`);
-            })
-            .on('mouseout', () => {
-                hoverGroup.selectAll('.tooltip-rect').remove();
-                hoverGroup.selectAll('.tooltip-text').remove();
-            });
+        chart.selectAll('.domain')
+            .style('display', 'none');
+        chart.selectAll('.tick')
+            .style('display', 'none');
     }, [activityInfoData, widthState]);
 
     return (
@@ -202,6 +205,20 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
                 </div>
             </div>
             <svg ref={graphRef} />
+            <div
+                className={styles.dayLegend}
+                style={{
+                    width: widthState,
+                }}
+            >
+                <span className={styles.dayLegendText}>1</span>
+                <span className={styles.dayLegendText}>2</span>
+                <span className={styles.dayLegendText}>3</span>
+                <span className={styles.dayLegendText}>4</span>
+                <span className={styles.dayLegendText}>5</span>
+                <span className={styles.dayLegendText}>6</span>
+                <span className={styles.dayLegendText}>7</span>
+            </div>
         </div>
     );
 };
