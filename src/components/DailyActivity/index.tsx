@@ -208,7 +208,10 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             <div
                 className={styles.dayLegend}
                 style={{
-                    width: widthState,
+                    width: widthState * 0.855,
+                    marginLeft: 60,
+                    bottom: '13%',
+                    position: 'relative',
                 }}
             >
                 <span className={styles.dayLegendText}>1</span>
