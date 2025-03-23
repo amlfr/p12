@@ -13,6 +13,7 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [widthState, setWidth] = useState<number>(0);
     const [heightState, setHeight] = useState<number>(0);
+    const [kgValuesState, setKgValues] = useState<number[]>([]);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -44,11 +45,12 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .range([0, widthState * 0.85]);
 
         const yMaxKg = d3.max(data, (d) => d.kilogram || 0);
-        const yMinKg = d3.min(data, (d) => d.kilogram || 0);
         const yScaleKg = d3.scaleLinear().domain([yMaxKg - 8, yMaxKg + 1]).range([heightState * 0.65, 0]);
-
+        const kgValues = yScaleKg.ticks(10);
+        setKgValues(kgValues);
+        console.log('kgValues', kgValues);
         const yMaxKcal = d3.max(data, (d) => d.calories || 0);
-        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * 0.71, 0]);
+        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * 0.65, 0]);
 
         chart.append('g').attr('transform', `translate(0, ${heightState * 0.65})`).call(d3.axisBottom(xScale));
         chart.append('g').attr('transform', `translate(${widthState * 0.85}, 0)`).call(d3.axisRight(yScaleKg));
@@ -221,6 +223,16 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
                 <span className={styles.dayLegendText}>5</span>
                 <span className={styles.dayLegendText}>6</span>
                 <span className={styles.dayLegendText}>7</span>
+            </div>
+            <div
+                className={styles.kgLegend}
+                style={{
+                    height: heightState * 0.68,
+                }}
+            >
+                {kgValuesState.map((value, index) => (
+                    <span key={index} className={styles.dayLegendText}>{value}</span>
+                ))}
             </div>
         </div>
     );

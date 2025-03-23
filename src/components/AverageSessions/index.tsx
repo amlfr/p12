@@ -27,11 +27,16 @@ export const AverageSessions = ({ timeInfoData }) => {
 
         // Define scales
         const x = d3.scaleLinear()
-            .domain([1, 7])
+            .domain([0.5, 7.5])
             .range([margin.left, size.width - margin.right]);
 
+        const maxSessionLength = d3.max(data, (d) => d.sessionLength);
+
         const y = d3.scaleLinear()
-            .domain([0, d3.max(data, (d) => d.sessionLength)])
+            .domain([
+                0,
+                maxSessionLength,
+            ])
             .range([size.height - margin.bottom, margin.top]);
 
         // Define curve
@@ -50,7 +55,8 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('stroke', '#ffffff')
             .attr('stroke-width', 2)
             .attr('d', curve)
-            .attr('class', styles.path);
+            .attr('class', styles.path)
+            .attr('transform', 'translate(0, -20)');
 
         svg.selectAll('circle')
             .data(data)

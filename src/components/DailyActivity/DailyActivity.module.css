@@ -58,3 +58,12 @@
     display: flex;
     justify-content: space-between;
 } 
+
+.kgLegend { 
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    position: relative;
+    left: 95%;
+    bottom: 90%;
+}
