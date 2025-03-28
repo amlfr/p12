@@ -135,7 +135,7 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .attr('width', barWidth * 5)
             .attr('height', heightState * 0.65)
             .attr('fill', '#c4c4c4')
-            .on('mouseover', (event, d, i) => {
+            .on('mouseover', (event, d) => {
                 /*   const targetClass = event.target.classList[0];
                 console.log('check params', event, d, i, targetClass);
                 d3.select(event.target).attr('opacity', 0.2); */

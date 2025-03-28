@@ -68,7 +68,13 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('cy', (d) => y(d.sessionLength))
             .attr('r', 4)
             .attr('fill', 'transparent')
-            .attr('class', styles.circle);
+            .attr('class', styles.circle)
+            .on('mouseover', (event, d) => {
+
+            })
+            .on('mouseout', () => {
+                d3.select(tooltipRef.current).style('display', 'none');
+            });
 
         // .attr('transform', 'translate(0, -20)');
     }, [timeInfoData, size]);
@@ -91,9 +97,7 @@ export const AverageSessions = ({ timeInfoData }) => {
                 }
             }}
         >
-            <div ref={tooltipRef} className={styles.tooltip} />
             <div ref={shadowRef} className={styles.shadowOverlay} />
-
             <span className={styles.title}>Durée moyenne des sessions</span>
             <svg ref={svgRef} className={styles.svgContainer} />
             <div className={styles.daysList}>
