@@ -13,7 +13,6 @@ export const profilePageLoader = async (
   timeInfoData: TimeInfoData;
 }> => {
     const { userId, dataSource } = params;
-    console.log('check datasource', dataSource, typeof dataSource);
 
     if (dataSource !== 'mock' && dataSource !== 'api') {
         throw new Response('Invalid data provider', { status: 400 });

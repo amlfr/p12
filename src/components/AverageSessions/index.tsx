@@ -8,6 +8,8 @@ export const AverageSessions = ({ timeInfoData }) => {
     const svgRef = useRef(null);
     const containerRef = useRef(null);
     const [size, setSize] = useState({ width: 0, height: 0 });
+    const tooltipRef = useRef(null);
+    const shadowRef = useRef(null);
 
     // Use useLayoutEffect to dynamically adjust the component's size
     useLayoutEffect(() => {
@@ -21,6 +23,7 @@ export const AverageSessions = ({ timeInfoData }) => {
         if (!timeInfoData || !timeInfoData.sessions || size.width === 0 || size.height === 0) return;
 
         const data = timeInfoData.sessions;
+        console.log('check average session data', data);
         const margin = {
             top: 20, right: 20, bottom: 20, left: 20,
         };
@@ -43,7 +46,7 @@ export const AverageSessions = ({ timeInfoData }) => {
         const curve = d3.line()
             .x((d) => x(d.day))
             .y((d) => y(d.sessionLength))
-            .curve(d3.curveCatmullRom.alpha(0.2));
+            .curve(d3.curveCatmullRom.alpha(0.0));
 
         // Use the curve in the svg
         const svg = d3.select(svgRef.current);
@@ -55,8 +58,8 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('stroke', '#ffffff')
             .attr('stroke-width', 2)
             .attr('d', curve)
-            .attr('class', styles.path)
-            .attr('transform', 'translate(0, -20)');
+            .attr('class', styles.svgGraph);
+        // .attr('transform', 'translate(0, -20)');
 
         svg.selectAll('circle')
             .data(data)
@@ -67,11 +70,30 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('fill', 'transparent')
             .attr('class', styles.circle);
 
-        console.log('check circles', svg.selectAll('circle'));
+        // .attr('transform', 'translate(0, -20)');
     }, [timeInfoData, size]);
 
     return (
-        <div ref={containerRef} className={styles.averageSessionsContainer}>
+        <div
+            ref={containerRef}
+            className={styles.averageSessionsContainer}
+            onMouseMove={(e) => {
+                if (shadowRef.current) {
+                    const { left, width } = containerRef.current.getBoundingClientRect();
+                    const mouseX = e.clientX - left;
+                    const shadowWidth = width - mouseX;
+                    shadowRef.current.style.width = `${shadowWidth}px`;
+                }
+            }}
+            onMouseLeave={() => {
+                if (shadowRef.current) {
+                    shadowRef.current.style.width = '0';
+                }
+            }}
+        >
+            <div ref={tooltipRef} className={styles.tooltip} />
+            <div ref={shadowRef} className={styles.shadowOverlay} />
+
             <span className={styles.title}>Durée moyenne des sessions</span>
             <svg ref={svgRef} className={styles.svgContainer} />
             <div className={styles.daysList}>

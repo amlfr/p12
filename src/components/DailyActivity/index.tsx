@@ -48,7 +48,6 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
         const yScaleKg = d3.scaleLinear().domain([yMaxKg - 8, yMaxKg + 1]).range([heightState * 0.65, 0]);
         const kgValues = yScaleKg.ticks(10);
         setKgValues(kgValues);
-        console.log('kgValues', kgValues);
         const yMaxKcal = d3.max(data, (d) => d.calories || 0);
         const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * 0.65, 0]);
 
@@ -100,50 +99,58 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', 'bar-kilogram')
+            .attr('class', (d, i) => `bar-kilogram${i}`)
             .attr('x', (d) => (xScale(parseDate(d.day)) || 0) - barWidth / 2)
             .attr('y', (d) => yScaleKg(d.kilogram))
             .attr('width', barWidth)
             .attr('height', (d) => heightState * 0.65 - yScaleKg(d.kilogram))
             .attr('fill', '#282D30')
-            .attr('rx', 5);
+            .attr('rx', 5)
+            .style('pointer-events', 'none');
 
         chart
             .selectAll('.bar-calories')
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', 'bar-calories')
+            .attr('class', (d, i) => `bar-calories${i}`)
             .attr('x', (d) => (xScale(parseDate(d.day)) || 0) + barWidth / 2)
             .attr('y', (d) => yScaleKcal(d.calories))
             .attr('width', barWidth)
             .attr('height', (d) => heightState * 0.65 - yScaleKcal(d.calories))
             .attr('fill', 'red')
-            .attr('rx', 5);
+            .attr('rx', 5)
+            .style('pointer-events', 'none');
 
-        const hoverGroup = chart.append('g').attr('class', 'hover-group').lower();
+        const hoverGroup = chart.append('g').attr('class', styles.hoverGroup).lower();
 
         hoverGroup
             .selectAll('.hover-rect')
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', 'hover-rect')
+            .attr('class', (d, i) => `hover-rect hover-rect${i} ${styles.hoverRect}`)
             .attr('x', (d) => xScale(parseDate(d.day)) - barWidth * 2.5)
             .attr('y', 0)
             .attr('width', barWidth * 5)
             .attr('height', heightState * 0.65)
             .attr('fill', '#c4c4c4')
-            .attr('fill-opacity', 0)
-            .on('mouseover', function (event, d) {
-                d3.select(this).attr('fill-opacity', 0.2);
+            .on('mouseover', (event, d, i) => {
+                /*   const targetClass = event.target.classList[0];
+                console.log('check params', event, d, i, targetClass);
+                d3.select(event.target).attr('opacity', 0.2); */
+
+                const targetElement = d3.select(event.target);
+                console.log('check params', event, d, targetElement);
+
+                targetElement.classed(styles.hoverRectActive, true); // Apply opacity correctly
 
                 const tooltipX = xScale(parseDate(d.day)) + 50;
                 const tooltipY = Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories));
 
                 hoverGroup
                     .append('rect')
-                    .attr('class', 'tooltip-rect')
+                    .attr('class', 'tooltip-rect tooltipToDelete')
                     .attr('x', tooltipX)
                     .attr('y', tooltipY)
                     .attr('width', 50)
@@ -153,7 +160,7 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
 
                 hoverGroup
                     .append('text')
-                    .attr('class', 'tooltip-text')
+                    .attr('class', `${styles.tooltipText} tooltipToDelete`)
                     .attr('x', tooltipX + 25)
                     .attr('y', tooltipY + 15)
                     .attr('fill', 'white')
@@ -163,7 +170,7 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
 
                 hoverGroup
                     .append('text')
-                    .attr('class', 'tooltip-text')
+                    .attr('class', `${styles.tooltipText} tooltipToDelete`)
                     .attr('x', tooltipX + 25)
                     .attr('y', tooltipY + 30)
                     .attr('fill', 'white')
@@ -171,9 +178,11 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
                     .attr('text-anchor', 'middle')
                     .text(`${d.calories}kcal`);
             })
-            .on('mouseout', function () {
-                d3.select(this).attr('fill-opacity', 0);
-                hoverGroup.selectAll('.tooltip-rect, .tooltip-text').remove();
+            .on('mouseout', () => {
+                hoverGroup.selectAll('.tooltipToDelete').remove();
+
+                console.log('test arget all hover rect', hoverGroup.selectAll('.targetHoverRect'));
+                hoverGroup.selectAll('.hover-rect').classed(styles.hoverRectActive, false);
             });
 
         chart.selectAll('.bar-kilogram, .bar-calories').on('mouseover', (event, d) => {

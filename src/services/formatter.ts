@@ -19,7 +19,6 @@ class formatter {
 
                 return dataObject.data;
             });
-            console.log(formattedData, 'formatter data api');
 
             return {
                 formattedUserInfoData: formattedData[0] as UserInfoData,

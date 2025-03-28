@@ -67,3 +67,19 @@
     left: 95%;
     bottom: 90%;
 }
+
+.hoverGroup { 
+    z-index: 10000;
+}
+
+.tooltipText { 
+    pointer-events: none;
+}
+
+.hoverRect { 
+    opacity: 0;
+}
+
+.hoverRectActive { 
+    opacity: 0.2;
+}
