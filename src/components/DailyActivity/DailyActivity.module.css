@@ -83,3 +83,30 @@
 .hoverRectActive { 
     opacity: 0.2;
 }
+
+.statBar {
+    border-top-left-radius: 5px;
+    border-radius: 5px;
+}
+
+.tooltipContainer { 
+    overflow: visible; 
+    z-index: 9999999999;
+    position: relative;
+}
+
+@media screen and (max-width: 1024px) { 
+   .kgLegend { 
+    left: 94%;
+    bottom: 79%;
+    width: 100px;
+   }
+
+   .dayLegend { 
+    position: relative;
+    top: -5%;
+    right: 3.5%;
+   }
+
+
+}

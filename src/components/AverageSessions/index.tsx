@@ -8,24 +8,23 @@ export const AverageSessions = ({ timeInfoData }) => {
     const svgRef = useRef(null);
     const containerRef = useRef(null);
     const [size, setSize] = useState({ width: 0, height: 0 });
-    const tooltipRef = useRef(null);
+    //const tooltipRef = useRef(null);
     const shadowRef = useRef(null);
 
     // Use useLayoutEffect to dynamically adjust the component's size
     useLayoutEffect(() => {
         if (containerRef.current) {
-            const { width, height } = containerRef.current.getBoundingClientRect();
+            const { width, height } = svgRef.current.getBoundingClientRect();
             setSize({ width, height });
         }
-    }, []);
+    }, [containerRef.current]);
 
     useEffect(() => {
         if (!timeInfoData || !timeInfoData.sessions || size.width === 0 || size.height === 0) return;
 
         const data = timeInfoData.sessions;
-        console.log('check average session data', data);
         const margin = {
-            top: 20, right: 20, bottom: 20, left: 20,
+            top: size.width < 180 ? 40 : 20, right: size.width < 180 ? 40 : 20, bottom: size.width < 180 ? 40 : 20, left: size.width < 180 ? 40 : 20,
         };
 
         // Define scales
@@ -59,8 +58,8 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('stroke-width', 2)
             .attr('d', curve)
             .attr('class', styles.svgGraph);
-        // .attr('transform', 'translate(0, -20)');
 
+        // Add data points in the graph
         svg.selectAll('circle')
             .data(data)
             .join('circle')
@@ -69,14 +68,38 @@ export const AverageSessions = ({ timeInfoData }) => {
             .attr('r', 4)
             .attr('fill', 'transparent')
             .attr('class', styles.circle)
+            //mouseover tooltip
             .on('mouseover', (event, d) => {
+                const tooltipWidth = 40;
+                const tooltipHeight = 25;
+                const xPos = x(d.day) + 10;
+                const yPos = y(d.sessionLength) - tooltipHeight;
 
+                svg.append('rect')
+                    .attr('class', `${styles.tooltip} tooltipToDelete`)
+                    .attr('x', xPos)
+                    .attr('y', yPos)
+                    .attr('width', tooltipWidth)
+                    .attr('height', tooltipHeight)
+                    .attr('fill', '#FFFFFF');
+
+                const tooltipTarget = svg.selectAll('.tooltipToDelete');
+                console.log('test tooltiptarget', tooltipTarget);
+
+                svg.append('text')
+                    .attr('class', `${styles.tooltipText} tooltipToDelete`)
+                    .attr('x', xPos + tooltipWidth / 2)
+                    .attr('y', yPos + tooltipHeight / 2)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-size', '10px')
+                    .text(`${d.sessionLength} min`);
             })
             .on('mouseout', () => {
-                d3.select(tooltipRef.current).style('display', 'none');
-            });
+                console.log('check average target event', svg.selectAll('.tootipToDelete'));
 
-        // .attr('transform', 'translate(0, -20)');
+                svg.selectAll('.tooltipToDelete').remove();
+            });
     }, [timeInfoData, size]);
 
     return (
@@ -84,7 +107,7 @@ export const AverageSessions = ({ timeInfoData }) => {
             ref={containerRef}
             className={styles.averageSessionsContainer}
             onMouseMove={(e) => {
-                if (shadowRef.current) {
+                if (shadowRef.current && containerRef.current) {
                     const { left, width } = containerRef.current.getBoundingClientRect();
                     const mouseX = e.clientX - left;
                     const shadowWidth = width - mouseX;

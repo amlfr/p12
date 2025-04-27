@@ -25,34 +25,36 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
 
     useEffect(() => {
         if (!graphRef.current || widthState === 0) return;
-
         const data = activityInfoData.sessions;
+
+        const heightSvgRatio = heightState < 300 ? 0.65 : 0.65;
+        const widthSvgRatio = widthState < 700 ? 0.8 : 0.85;
 
         const svg = d3.select(graphRef.current);
         svg.selectAll('*').remove();
 
         const chart = svg
-            .attr('width', widthState)
-            .attr('height', heightState)
+            .attr('width', widthState * (widthState < 700 ? 0.92 : 1))
+            .attr('height', heightState * (heightState < 300 ? 0.8 : 1))
             .append('g')
-            .attr('transform', 'translate(60, 60)');
+            .attr('transform', widthState < 700 ? 'translate(50, 30)' : 'translate(60, 60)');
 
         const parseDate = d3.timeParse('%Y-%m-%d');
 
         const xScale = d3
             .scaleTime()
             .domain(d3.extent(data, (d) => parseDate(d.day)) as [Date, Date])
-            .range([0, widthState * 0.85]);
+            .range([0, widthState * (widthSvgRatio)]);
 
         const yMaxKg = d3.max(data, (d) => d.kilogram || 0);
-        const yScaleKg = d3.scaleLinear().domain([yMaxKg - 8, yMaxKg + 1]).range([heightState * 0.65, 0]);
+        const yScaleKg = d3.scaleLinear().domain([yMaxKg - 8, yMaxKg + 1]).range([heightState * (heightSvgRatio), 0]);
         const kgValues = yScaleKg.ticks(10);
         setKgValues(kgValues);
         const yMaxKcal = d3.max(data, (d) => d.calories || 0);
-        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * 0.65, 0]);
+        const yScaleKcal = d3.scaleLinear().domain([0, yMaxKcal + 200]).range([heightState * (heightSvgRatio), 0]);
 
-        chart.append('g').attr('transform', `translate(0, ${heightState * 0.65})`).call(d3.axisBottom(xScale));
-        chart.append('g').attr('transform', `translate(${widthState * 0.85}, 0)`).call(d3.axisRight(yScaleKg));
+        chart.append('g').attr('transform', `translate(0, ${heightSvgRatio})`).call(d3.axisBottom(xScale));
+        chart.append('g').attr('transform', `translate(${widthSvgRatio}, 0)`).call(d3.axisRight(yScaleKg));
 
         svg.selectAll('.tick').remove();
 
@@ -61,14 +63,14 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
         const yAxisKg = d3.axisRight(yScaleKg);
 
         chart.append('g')
-            .attr('transform', `translate(0, ${heightState * 0.65})`).attr('class', styles.xAxis)
+            .attr('transform', `translate(0, ${heightSvgRatio})`).attr('class', styles.xAxis)
             .call(xAxis)
             .attr('class', styles.xAxisTrue)
             .selectAll('text')
             .attr('class', styles.xAxisLabel);
 
         chart.append('g')
-            .attr('transform', `translate(${widthState * 0.85}, 0)`)
+            .attr('transform', `translate(${widthSvgRatio}, 0)`)
             .call(yAxisKg)
             .attr('class', styles.yAxisKg)
             .selectAll('text')
@@ -76,7 +78,7 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
 
         chart.append('line')
             .attr('x1', 0)
-            .attr('x2', widthState * 0.85)
+            .attr('x2', widthSvgRatio)
             .attr('y1', yScaleKg((yMaxKg - 8 + yMaxKg + 1) / 2))
             .attr('y2', yScaleKg((yMaxKg - 8 + yMaxKg + 1) / 2))
             .attr('stroke', '#DEDEDE')
@@ -85,25 +87,25 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
 
         chart.append('line')
             .attr('x1', 0)
-            .attr('x2', widthState * 0.85)
+            .attr('x2', widthSvgRatio)
             .attr('y1', yScaleKg(yMaxKg + 1))
             .attr('y2', yScaleKg(yMaxKg + 1))
             .attr('stroke', '#DEDEDE')
             .attr('stroke-dasharray', '4')
             .attr('class', 'dotted-line');
 
-        const barWidth = (widthState * 0.01);
+        const barWidth = widthState * (widthState < 700 ? 0.015 : 0.01);
 
         chart
             .selectAll('.bar-kilogram')
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', (d, i) => `bar-kilogram${i}`)
-            .attr('x', (d) => (xScale(parseDate(d.day)) || 0) - barWidth / 2)
+            .attr('class', (d, i) => `bar-kilogram${i} ${styles.statBar}`)
+            .attr('x', (d) => (xScale(parseDate(d.day)) || 0) - barWidth / 2 - 10)
             .attr('y', (d) => yScaleKg(d.kilogram))
             .attr('width', barWidth)
-            .attr('height', (d) => heightState * 0.65 - yScaleKg(d.kilogram))
+            .attr('height', (d) => heightState * heightSvgRatio - yScaleKg(d.kilogram))
             .attr('fill', '#282D30')
             .attr('rx', 5)
             .style('pointer-events', 'none');
@@ -113,16 +115,16 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .data(data)
             .enter()
             .append('rect')
-            .attr('class', (d, i) => `bar-calories${i}`)
+            .attr('class', (d, i) => `bar-calories${i} ${styles.statBar}`)
             .attr('x', (d) => (xScale(parseDate(d.day)) || 0) + barWidth / 2)
             .attr('y', (d) => yScaleKcal(d.calories))
             .attr('width', barWidth)
-            .attr('height', (d) => heightState * 0.65 - yScaleKcal(d.calories))
+            .attr('height', (d) => heightState * heightSvgRatio - yScaleKcal(d.calories))
             .attr('fill', 'red')
             .attr('rx', 5)
             .style('pointer-events', 'none');
 
-        const hoverGroup = chart.append('g').attr('class', styles.hoverGroup).lower();
+        const hoverGroup = chart.append('g').attr('class', styles.hoverGroup);
 
         hoverGroup
             .selectAll('.hover-rect')
@@ -133,29 +135,23 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .attr('x', (d) => xScale(parseDate(d.day)) - barWidth * 2.5)
             .attr('y', 0)
             .attr('width', barWidth * 5)
-            .attr('height', heightState * 0.65)
+            .attr('height', heightState * heightSvgRatio)
             .attr('fill', '#c4c4c4')
             .on('mouseover', (event, d) => {
-                /*   const targetClass = event.target.classList[0];
-                console.log('check params', event, d, i, targetClass);
-                d3.select(event.target).attr('opacity', 0.2); */
-
                 const targetElement = d3.select(event.target);
-                console.log('check params', event, d, targetElement);
 
-                targetElement.classed(styles.hoverRectActive, true); // Apply opacity correctly
+                targetElement.classed(styles.hoverRectActive, true);
 
                 const tooltipX = xScale(parseDate(d.day)) + 50;
                 const tooltipY = Math.min(yScaleKg(d.kilogram), yScaleKcal(d.calories));
 
                 hoverGroup
                     .append('rect')
-                    .attr('class', 'tooltip-rect tooltipToDelete')
+                    .attr('class', `tooltip-rect tooltipToDelete ${styles.tooltipContainer}`)
                     .attr('x', tooltipX)
                     .attr('y', tooltipY)
                     .attr('width', 50)
                     .attr('height', 40)
-                    .attr('rx', 5)
                     .attr('fill', '#E60000');
 
                 hoverGroup
@@ -181,7 +177,6 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             .on('mouseout', () => {
                 hoverGroup.selectAll('.tooltipToDelete').remove();
 
-                console.log('test arget all hover rect', hoverGroup.selectAll('.targetHoverRect'));
                 hoverGroup.selectAll('.hover-rect').classed(styles.hoverRectActive, false);
             });
 
@@ -219,9 +214,9 @@ export const DailyActivity: React.FC<DailyActivityProps> = ({ activityInfoData }
             <div
                 className={styles.dayLegend}
                 style={{
-                    width: widthState * 0.855,
-                    marginLeft: 60,
-                    bottom: '13%',
+                    width: widthState * (widthState < 700 ? 0.810 : 0.855),
+                    marginLeft: widthState < 700 ? 65 : 60,
+                    bottom: '17%',
                     position: 'relative',
                 }}
             >

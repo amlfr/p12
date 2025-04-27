@@ -110,3 +110,10 @@ main {
   font-weight: 900;
   font-style: italic;
 }
+
+
+@media screen and (max-width: 1024px) {
+  main { 
+    overflow: hidden;
+  }
+}

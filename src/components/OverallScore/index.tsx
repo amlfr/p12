@@ -31,14 +31,14 @@ export const OverallScore = ({ score }) => {
 
         const svgGroup = svg.append('g').attr('transform', `translate(${size / 2}, ${size / 2})`);
 
-        // Background Circle (Grey Track)
+        // Background Circle
         svgGroup.append('circle')
             .attr('r', radius)
             .attr('fill', 'white')
             .attr('stroke', '#FBFBFB')
             .attr('stroke-width', thickness);
 
-        // Arc generator (starting from the top)
+        // Red circle
         const arc = d3
             .arc()
             .innerRadius(radius - thickness / 2)

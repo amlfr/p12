@@ -23,3 +23,11 @@
     flex-direction: column;
     gap: 2.5vh;
 }
+
+
+@media screen and (max-width: 1024px) { 
+    .sideBar { 
+        width: 7vw;
+        flex-shrink:0;
+}
+}

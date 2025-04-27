@@ -31,13 +31,11 @@ export const SkillChart = ({ performanceInfoData }) => {
 
     useEffect(() => {
         if (!performanceInfoData || !performanceInfoData.data || size === 0) return;
-
         const { data, kind } = performanceInfoData;
         const numSides = 6;
         const levels = 5;
-        //TODO CHANGE THE MAX TO BE FIXED I THINK
         const maxSkillValue = 250;
-        const radius = size / 3;
+        const radius = size / (size < 200 ? 3.5 : 3);
         const angleSlice = (Math.PI * 2) / numSides;
         const scale = d3.scaleLinear().domain([0, maxSkillValue]).range([0, radius]);
 
@@ -84,9 +82,8 @@ export const SkillChart = ({ performanceInfoData }) => {
 
         g.append('polygon')
             .attr('points', skillPoints.map((p) => p.join(',')).join(' '))
-            .attr('fill', 'red')
-            .attr('opacity', 0.5)
-            .attr('stroke', 'red')
+            .attr('fill', '#FF0101')
+            .attr('opacity', 0.7)
             .attr('stroke-width', 2);
 
         // Add skill labels at each vertex
@@ -100,7 +97,7 @@ export const SkillChart = ({ performanceInfoData }) => {
                 .attr('text-anchor', 'middle')
                 .attr('dominant-baseline', 'middle')
                 .attr('fill', 'white')
-                .style('font-size', '12px')
+                .style('font-size', size < 200 ? '10px' : '12px')
                 .text(skill.name);
         });
     }, [performanceInfoData, size]);
